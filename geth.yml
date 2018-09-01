@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: geth
+  labels:
+    app: geth
+spec:
+  ports:
+  - port: 8545
+    name: rpc-endpoint
+    protocol: TCP
+    targetPort: 8545
+  selector:
+    app: geth
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: geth
+  labels:
+    app: geth
+spec:
+  replicas: 1
+  serviceName: "geth"
+  selector:
+    matchLabels:
+      app: geth
+  template:
+    metadata:
+      labels:
+        app: geth
+    spec:
+      containers:
+      - name: geth
+        image: ethereum/client-go:release-1.8
+        ports:
+        - containerPort: 8545
+        - containerPort: 30303
+        args:
+        - "--datadir=/var/geth"
+        - "--rpc"
+        - "--rpcaddr=0.0.0.0"
+        - "--rpcapi=debug,admin,eth,net,txpool,web3"
+        resources:
+          requests:
+            cpu: 800m
+        volumeMounts:
+        - name: geth-data
+          mountPath: /var/geth
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8545
+          initialDelaySeconds: 15
+          timeoutSeconds: 5
+  volumeClaimTemplates:
+  - metadata:
+      name: geth-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "alicloud-disk-efficiency"
+      resources:
+        requests:
+          storage: 2000Gi
