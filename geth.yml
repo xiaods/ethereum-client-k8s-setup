@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: geth
+  namespace: blockchain
   labels:
     app: geth
 spec:
@@ -17,6 +18,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: geth
+  namespace: blockchain
   labels:
     app: geth
 spec:
@@ -38,6 +40,8 @@ spec:
         - containerPort: 30303
         args:
         - "--datadir=/var/geth"
+        - "--syncmode=full"
+        - "--cache=2048"
         - "--rpc"
         - "--rpcaddr=0.0.0.0"
         - "--rpcapi=debug,admin,eth,net,txpool,web3"
@@ -56,6 +60,7 @@ spec:
   volumeClaimTemplates:
   - metadata:
       name: geth-data
+      namespace: blockchain
     spec:
       accessModes: [ "ReadWriteOnce" ]
       storageClassName: "alicloud-disk-efficiency"

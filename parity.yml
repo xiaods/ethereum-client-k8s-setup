@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: blockchain
+  name: parity-data
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: "alicloud-disk-efficiency"
+  resources:
+    requests:
+      storage: 2000Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: parity-service
+  namespace: blockchain
+spec:
+  selector:
+    app: parity
+  ports:
+    - name: eth-net
+      port: 30303
+      protocol: TCP
+    - name: json-rpc-http
+      port: 8545
+      protocol: TCP
+    - name: json-rpc-ws
+      port: 8546
+      protocol: TCP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: parity-config
+  namespace: blockchain
+data:
+  parity.toml: |
+    [parity]
+    mode = "active"
+    base_path = "/data"
+    [footprint]
+    db_compaction = "hdd"
+    pruning_memory = 128
+    tracing = "off"
+    [ui]
+    disable = true
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: parity
+  namespace: blockchain
+  labels:
+    app: parity
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: parity
+  template:
+    metadata:
+      labels:
+        app: parity
+        name: parity
+    spec:
+      terminationGracePeriodSeconds: 20
+      containers:
+        - image: parity/parity:v1.9.4
+          name: parity
+          imagePullPolicy: IfNotPresent
+          args: ["--config=/config/parity.toml"]
+          volumeMounts:
+            - name: parity-config
+              mountPath: /config
+            - name: parity-data
+              mountPath: /data
+      volumes:
+        - name: parity-config
+          configMap:
+            name: parity-config
+        - name: parity-data
+          persistentVolumeClaim:
+            claimName: parity-data
