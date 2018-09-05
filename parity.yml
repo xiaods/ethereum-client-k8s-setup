@@ -41,9 +41,11 @@ data:
     mode = "active"
     base_path = "/data"
     [footprint]
-    db_compaction = "hdd"
+    tracing = "on"
+    pruning = "fast"
+    pruning_history = 64
     pruning_memory = 128
-    tracing = "off"
+    db_compaction = "hdd"
     [ui]
     disable = true
     [rpc]

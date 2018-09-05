@@ -1,6 +1,22 @@
 apiVersion: v1
 kind: Service
 metadata:
+  name: geth-rpc
+  namespace: blockchain
+  labels:
+    app: geth
+spec:
+  ports:
+  - port: 30303
+    name: peer-endpoint
+    protocol: TCP
+    targetPort: 30303
+  selector:
+    app: geth
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: geth
   namespace: blockchain
   labels:
@@ -45,6 +61,7 @@ spec:
         - "--rpc"
         - "--rpcaddr=0.0.0.0"
         - "--rpcapi=debug,admin,eth,net,txpool,web3"
+        - "--maxpendpeers=10"
         resources:
           requests:
             cpu: 800m
