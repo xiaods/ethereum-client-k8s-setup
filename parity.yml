@@ -26,9 +26,6 @@ spec:
     - name: json-rpc-http
       port: 8545
       protocol: TCP
-    - name: json-rpc-ws
-      port: 8546
-      protocol: TCP
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -79,7 +76,7 @@ spec:
         - image: parity/parity:v1.9.4
           name: parity
           imagePullPolicy: IfNotPresent
-          args: ["--config=/config/parity.toml"]
+          args: ["--config=/config/parity.toml","--min-gas-price=1500000000"]
           volumeMounts:
             - name: parity-config
               mountPath: /config
