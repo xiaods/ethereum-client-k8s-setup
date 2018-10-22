@@ -50,7 +50,7 @@ data:
     port = 8545
     interface = "all"
     cors = []
-    apis = ["web3", "eth", "pubsub", "net", "parity", "parity_pubsub", "traces", "rpc", "shh", "shh_pubsub"]
+    apis = ["web3", "eth", "pubsub", "net", "parity", "parity_pubsub", "traces", "rpc", "shh", "shh_pubsub","parity_set"]
     hosts = ["none"]
 ---
 apiVersion: extensions/v1beta1
