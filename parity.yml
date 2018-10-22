@@ -9,7 +9,7 @@ spec:
   storageClassName: "alicloud-disk-efficiency"
   resources:
     requests:
-      storage: 2000Gi
+      storage: 300Gi
 ---
 apiVersion: v1
 kind: Service
@@ -73,10 +73,10 @@ spec:
     spec:
       terminationGracePeriodSeconds: 20
       containers:
-        - image: parity/parity:v1.9.4
+        - image: parity/parity:v1.9.7
           name: parity
           imagePullPolicy: IfNotPresent
-          args: ["--config=/config/parity.toml","--min-gas-price=1500000000"]
+          args: ["--config=/config/parity.toml","--min-gas-price=1500000000","--base-path=/data"]
           volumeMounts:
             - name: parity-config
               mountPath: /config
@@ -85,6 +85,7 @@ spec:
       volumes:
         - name: parity-config
           configMap:
+            defaultMode: 0755
             name: parity-config
         - name: parity-data
           persistentVolumeClaim:
