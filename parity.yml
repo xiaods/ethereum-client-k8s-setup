@@ -43,6 +43,7 @@ data:
     pruning_history = 64
     pruning_memory = 128
     db_compaction = "hdd"
+    cache_size = 4096
     [ui]
     disable = true
     [rpc]
@@ -72,8 +73,11 @@ spec:
         name: parity
     spec:
       terminationGracePeriodSeconds: 20
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
       containers:
-        - image: parity/parity:v1.9.7
+        - image: parity/parity:v2.0.9
           name: parity
           imagePullPolicy: IfNotPresent
           args: ["--config=/config/parity.toml","--min-gas-price=1500000000","--base-path=/data"]
